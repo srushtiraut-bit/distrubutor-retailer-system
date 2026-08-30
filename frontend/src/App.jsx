@@ -6,6 +6,7 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import RetailerDashboard from './pages/retailer/Dashboard';
 import SelectDistributor from './pages/retailer/SelectDistributor';
+import BrowseProducts from './pages/retailer/BrowseProducts';
 
 function App() {
   return (
@@ -33,6 +34,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+  path="/retailer/browse-products/:distributorId"
+  element={
+    <ProtectedRoute allowedRole="retailer">
+      <BrowseProducts />
+    </ProtectedRoute>
+  }
+/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
