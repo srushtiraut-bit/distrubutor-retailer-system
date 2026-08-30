@@ -6,7 +6,6 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import RetailerDashboard from './pages/retailer/Dashboard';
 import SelectDistributor from './pages/retailer/SelectDistributor';
-//import BrowseProducts from './pages/retailer/BrowseProducts';
 
 function App() {
   return (
@@ -25,14 +24,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
-  path="/retailer/select-distributor"
-  element={
-    <ProtectedRoute allowedRole="retailer">
-      <SelectDistributor />
-    </ProtectedRoute>
-  }
-/>
+            path="/retailer/select-distributor"
+            element={
+              <ProtectedRoute allowedRole="retailer">
+                <SelectDistributor />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
