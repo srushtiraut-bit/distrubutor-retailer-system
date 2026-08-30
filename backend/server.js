@@ -15,3 +15,5 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const distributorRoutes = require('./routes/distributor.routes');
 app.use('/api/distributors', distributorRoutes);
+const retailerRoutes = require('./routes/retailer.routes');
+app.use('/api/retailer', retailerRoutes);

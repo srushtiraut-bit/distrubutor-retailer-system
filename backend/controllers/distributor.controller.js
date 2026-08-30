@@ -7,6 +7,7 @@ exports.getAllDistributors = async (req, res) => {
     );
     res.status(200).json(rows);
   } catch (err) {
+    console.error('Get distributors error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

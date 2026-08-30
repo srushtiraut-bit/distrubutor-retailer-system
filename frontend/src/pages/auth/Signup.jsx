@@ -32,7 +32,6 @@ const Signup = () => {
     setError('');
     setSuccess('');
 
-    // Check passwords
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -55,7 +54,6 @@ const Signup = () => {
 
       setSuccess('Account created successfully!');
 
-      // Go to login after successful signup
       setTimeout(() => {
         navigate('/login');
       }, 1200);
@@ -101,6 +99,7 @@ const Signup = () => {
           </div>
 
         </div>
+
       </div>
 
       {/* RIGHT SIDE */}
@@ -206,13 +205,15 @@ const Signup = () => {
               </div>
             )}
 
-            {/* SUBMIT */}
+            {/* CREATE ACCOUNT */}
             <button
               type="submit"
               className="login-button"
               disabled={loading}
             >
-              {loading ? 'Creating account...' : 'Create Account'}
+              {loading
+                ? 'Creating account...'
+                : 'Create Account'}
             </button>
 
           </form>

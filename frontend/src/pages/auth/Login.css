@@ -9,7 +9,9 @@
   background: #f5f7fb;
 }
 
-/* LEFT SIDE */
+/* =========================
+   LEFT SIDE
+========================= */
 
 .login-left {
   width: 52%;
@@ -74,7 +76,9 @@
   color: #eff6ff;
 }
 
-/* RIGHT SIDE */
+/* =========================
+   RIGHT SIDE
+========================= */
 
 .login-right {
   width: 48%;
@@ -109,7 +113,9 @@
   margin: 0;
 }
 
-/* ROLE */
+/* =========================
+   ROLE SELECTOR
+========================= */
 
 .role-selector {
   display: flex;
@@ -138,7 +144,9 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* INPUTS */
+/* =========================
+   INPUTS
+========================= */
 
 .input-group {
   margin-bottom: 20px;
@@ -167,6 +175,10 @@
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
+/* =========================
+   PASSWORD
+========================= */
+
 .password-label {
   display: flex;
   justify-content: space-between;
@@ -178,7 +190,9 @@
   font-size: 13px;
 }
 
-/* ERROR */
+/* =========================
+   ERROR
+========================= */
 
 .error-message {
   background: #fef2f2;
@@ -190,7 +204,23 @@
   margin-bottom: 18px;
 }
 
-/* LOGIN BUTTON */
+/* =========================
+   SUCCESS
+========================= */
+
+.success-message {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+  padding: 11px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+
+/* =========================
+   BUTTON
+========================= */
 
 .login-button {
   width: 100%;
@@ -214,7 +244,9 @@
   cursor: not-allowed;
 }
 
-/* SIGNUP */
+/* =========================
+   SIGNUP / LOGIN LINK
+========================= */
 
 .signup-text {
   text-align: center;
@@ -233,9 +265,12 @@
   text-decoration: underline;
 }
 
-/* MOBILE */
+/* =========================
+   MOBILE
+========================= */
 
 @media (max-width: 850px) {
+
   .login-left {
     display: none;
   }
@@ -250,17 +285,8 @@
 }
 
 @media (max-width: 500px) {
+
   .login-card {
     padding: 28px 22px;
   }
-}
-
-.success-message {
-  background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
-  padding: 11px;
-  border-radius: 8px;
-  font-size: 14px;
-  margin-bottom: 18px;
 }
