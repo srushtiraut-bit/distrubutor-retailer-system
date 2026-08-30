@@ -6,10 +6,12 @@ import './Login.css';
 
 const Login = () => {
   const [role, setRole] = useState('retailer');
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -43,7 +45,8 @@ const Login = () => {
       );
     } catch (err) {
       setError(
-        err.response?.data?.message || 'Invalid email or password'
+        err.response?.data?.message ||
+        'Invalid email or password'
       );
     } finally {
       setLoading(false);
@@ -53,14 +56,16 @@ const Login = () => {
   return (
     <div className="login-page">
 
-      {/* Left side */}
+      {/* LEFT SIDE */}
       <div className="login-left">
+
         <div className="brand">
           <div className="brand-icon">S</div>
           <span>SmartSupply</span>
         </div>
 
         <div className="hero-content">
+
           <h1>
             Manage your supply chain
             <span> smarter.</span>
@@ -76,11 +81,13 @@ const Login = () => {
             <div>✓ Real-time Order Tracking</div>
             <div>✓ Retailer & Distributor Network</div>
           </div>
+
         </div>
       </div>
 
-      {/* Right side */}
+      {/* RIGHT SIDE */}
       <div className="login-right">
+
         <div className="login-card">
 
           <div className="login-header">
@@ -88,8 +95,9 @@ const Login = () => {
             <p>Sign in to continue to SmartSupply</p>
           </div>
 
-          {/* Role selector */}
+          {/* ROLE SELECTOR */}
           <div className="role-selector">
+
             <button
               type="button"
               className={role === 'retailer' ? 'active' : ''}
@@ -105,12 +113,15 @@ const Login = () => {
             >
               📦 Distributor
             </button>
+
           </div>
 
           <form onSubmit={handleSubmit}>
 
+            {/* EMAIL */}
             <div className="input-group">
               <label>Email address</label>
+
               <input
                 type="email"
                 name="email"
@@ -121,10 +132,15 @@ const Login = () => {
               />
             </div>
 
+            {/* PASSWORD */}
             <div className="input-group">
+
               <div className="password-label">
                 <label>Password</label>
-                <a href="#forgot">Forgot password?</a>
+
+                <a href="#forgot">
+                  Forgot password?
+                </a>
               </div>
 
               <input
@@ -135,14 +151,17 @@ const Login = () => {
                 onChange={handleChange}
                 required
               />
+
             </div>
 
+            {/* ERROR */}
             {error && (
               <div className="error-message">
                 {error}
               </div>
             )}
 
+            {/* LOGIN BUTTON */}
             <button
               type="submit"
               className="login-button"
@@ -153,6 +172,7 @@ const Login = () => {
 
           </form>
 
+          {/* SIGNUP */}
           <div className="signup-text">
             Don't have an account?{' '}
             <Link to="/signup">
@@ -161,6 +181,7 @@ const Login = () => {
           </div>
 
         </div>
+
       </div>
 
     </div>

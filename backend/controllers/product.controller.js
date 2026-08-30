@@ -44,3 +44,13 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
+exports.getProductsByDistributor = async (req, res) => {
+  try {
+    const { distributorId } = req.params;
+    const products = await ProductModel.findAllByDistributor(distributorId);
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};

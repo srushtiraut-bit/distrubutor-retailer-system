@@ -9,6 +9,7 @@ const stockRoutes = require('./routes/stock.routes');
 const orderRoutes = require('./routes/order.routes');
 const profitLossRoutes = require('./routes/profitLoss.routes');
 const paymentRoutes = require('./routes/payment.routes');
+const retailerRoutes = require('./routes/retailer.routes');
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use('/api/stock', stockRoutes);
 app.use('/api/order', orderRoutes);
 app.use('/api/profit-loss', profitLossRoutes);
 app.use('/api/payment', paymentRoutes);
+app.use('/api/retailer', retailerRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

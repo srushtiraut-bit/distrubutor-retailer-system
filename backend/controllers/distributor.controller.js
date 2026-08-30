@@ -53,6 +53,17 @@ exports.getDashboardStats = async (req, res) => {
       recentOrders
     });
   } catch (err) {
+    console.error('Get distributors error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.getAllDistributors = async (req, res) => {
+  try {
+    const distributors = await DistributorModel.findAll();
+    res.status(200).json(distributors);
+  } catch (err) {
+    console.error('Get all distributors error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

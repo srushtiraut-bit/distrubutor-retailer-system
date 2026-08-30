@@ -16,6 +16,13 @@ const DistributorModel = {
       [name, contact, address, gst_no, email, hashedPassword]
     );
     return result.insertId;
+  },
+
+  async findAll() {
+    const [rows] = await pool.query(
+      'SELECT distributor_id, name, email, contact FROM distributor'
+    );
+    return rows;
   }
 };
 
