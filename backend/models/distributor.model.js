@@ -3,7 +3,7 @@ const pool = require('../config/db');
 const DistributorModel = {
   async findByEmail(email) {
     const [rows] = await pool.query(
-      'SELECT * FROM DISTRIBUTOR WHERE Email = ?',
+      'SELECT * FROM distributor WHERE email = ?',
       [email]
     );
     return rows[0];
@@ -11,7 +11,7 @@ const DistributorModel = {
 
   async create({ name, contact, address, gst_no, email, hashedPassword }) {
     const [result] = await pool.query(
-      `INSERT INTO DISTRIBUTOR (Name, Contact, Address, GST_No, Email, Password)
+      `INSERT INTO distributor (name, contact, address, gst_no, email, password)
        VALUES (?, ?, ?, ?, ?, ?)`,
       [name, contact, address, gst_no, email, hashedPassword]
     );

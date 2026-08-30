@@ -1,0 +1,12 @@
+.inline-input {
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13.5px;
+  width: 100%;
+}
+
+.status-partial {
+  background: #fef3c7;
+  color: #b45309;
+}
