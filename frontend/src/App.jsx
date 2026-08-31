@@ -17,6 +17,7 @@ import OrderHistory from './pages/retailer/OrderHistory';
 import PaymentHistory from './pages/retailer/PaymentHistory';
 import Settings from './pages/retailer/Settings';
 import PlaceOrder from './pages/retailer/PlaceOrder';
+import Payment from './pages/retailer/Payment';
 
 function App() {
   return (
@@ -94,6 +95,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+  path="/retailer/payment"
+  element={
+    <ProtectedRoute allowedRole="retailer">
+      <Payment />
+    </ProtectedRoute>
+  }
+/>
         </Routes>
       </BrowserRouter>
     </AuthProvider>

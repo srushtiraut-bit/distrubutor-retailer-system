@@ -11,6 +11,7 @@ const profitLossRoutes = require('./routes/profitLoss.routes');
 const paymentRoutes = require('./routes/payment.routes');
 const retailerRoutes = require('./routes/retailer.routes');
 
+
 const app = express();
 
 app.use(cors());
