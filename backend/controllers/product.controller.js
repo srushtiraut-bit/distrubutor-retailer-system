@@ -1,4 +1,5 @@
 const ProductModel = require('../models/product.model');
+const pool = require('../config/db');
 
 exports.getMyProducts = async (req, res) => {
   try {
@@ -48,7 +49,20 @@ exports.deleteProduct = async (req, res) => {
 exports.getProductsByDistributor = async (req, res) => {
   try {
     const { distributorId } = req.params;
-    const products = await ProductModel.findAllByDistributor(distributorId);
+    const [products] = await pool.query(
+      `SELECT 
+         p.product_id AS Product_ID,
+         p.name AS Name,
+         p.category AS Category,
+         p.selling_price AS Selling_Price,
+         p.unit AS Unit,
+         COALESCE(SUM(s.remaining_quantity), 0) AS Remaining_Quantity
+       FROM product p
+       LEFT JOIN stock s ON p.product_id = s.product_id
+       WHERE p.distributor_id = ?
+       GROUP BY p.product_id, p.name, p.category, p.selling_price, p.unit`,
+      [distributorId]
+    );
     res.status(200).json(products);
   } catch (err) {
     res.status(500).json({ message: 'Server error', error: err.message });

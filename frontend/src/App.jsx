@@ -16,6 +16,7 @@ import BrowseProducts from './pages/retailer/BrowseProducts';
 import OrderHistory from './pages/retailer/OrderHistory';
 import PaymentHistory from './pages/retailer/PaymentHistory';
 import Settings from './pages/retailer/Settings';
+import PlaceOrder from './pages/retailer/PlaceOrder';
 
 function App() {
   return (
@@ -81,6 +82,15 @@ function App() {
             element={
               <ProtectedRoute allowedRole="retailer">
                 <Settings />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/retailer/place-order"
+            element={
+              <ProtectedRoute allowedRole="retailer">
+                <PlaceOrder />
               </ProtectedRoute>
             }
           />

@@ -2,7 +2,7 @@ const pool = require('../config/db');
 
 exports.getDashboardStats = async (req, res) => {
   try {
-    const retailerId = req.user.id; // comes from JWT via auth middleware
+    const retailerId = req.user.id;
 
     const [orderStats] = await pool.query(
       `SELECT 
@@ -55,6 +55,7 @@ exports.getRecentOrders = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 exports.getAllOrders = async (req, res) => {
   try {
     const retailerId = req.user.id;
@@ -95,5 +96,68 @@ exports.getAllPayments = async (req, res) => {
   } catch (err) {
     console.error('All payments error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.placeOrder = async (req, res) => {
+  const connection = await pool.getConnection();
+  try {
+    const retailerId = req.user.id;
+    const { distributorId, items } = req.body;
+
+    if (!distributorId || !items || items.length === 0) {
+      connection.release();
+      return res.status(400).json({ message: 'Invalid order data' });
+    }
+
+    await connection.beginTransaction();
+
+    const productIds = items.map((i) => i.productId);
+    const [products] = await connection.query(
+      `SELECT product_id, cost_price, selling_price FROM product WHERE product_id IN (?)`,
+      [productIds]
+    );
+
+    const productMap = {};
+    products.forEach((p) => {
+      productMap[p.product_id] = p;
+    });
+
+    let totalBill = 0;
+    for (const item of items) {
+      const product = productMap[item.productId];
+      if (!product) {
+        throw new Error(`Product ${item.productId} not found`);
+      }
+      totalBill += product.selling_price * item.quantity;
+    }
+
+    const [orderResult] = await connection.query(
+      `INSERT INTO orders (retailer_id, distributor_id, order_date, total_bill, order_status)
+       VALUES (?, ?, NOW(), ?, 'Pending')`,
+      [retailerId, distributorId, totalBill]
+    );
+
+    const orderId = orderResult.insertId;
+
+    for (const item of items) {
+      const product = productMap[item.productId];
+      const subtotal = product.selling_price * item.quantity;
+      await connection.query(
+        `INSERT INTO order_item (order_id, product_id, quantity, cost_price, selling_price, subtotal)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [orderId, item.productId, item.quantity, product.cost_price, product.selling_price, subtotal]
+      );
+    }
+
+    await connection.commit();
+
+    res.status(201).json({ message: 'Order placed successfully', orderId });
+  } catch (err) {
+    await connection.rollback();
+    console.error('Place order error:', err);
+    res.status(500).json({ message: 'Failed to place order', error: err.message });
+  } finally {
+    connection.release();
   }
 };

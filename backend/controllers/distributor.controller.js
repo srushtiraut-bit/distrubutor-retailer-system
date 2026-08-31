@@ -60,7 +60,15 @@ exports.getDashboardStats = async (req, res) => {
 
 exports.getAllDistributors = async (req, res) => {
   try {
-    const distributors = await DistributorModel.findAll();
+    const [distributors] = await pool.query(
+      `SELECT 
+         distributor_id AS Distributor_ID, 
+         name AS Name, 
+         contact AS Contact, 
+         address AS Address, 
+         type_of_shop AS Type_of_Shop 
+       FROM distributor`
+    );
     res.status(200).json(distributors);
   } catch (err) {
     console.error('Get all distributors error:', err);
