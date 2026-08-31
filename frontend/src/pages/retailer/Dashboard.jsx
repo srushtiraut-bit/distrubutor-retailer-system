@@ -86,17 +86,26 @@ const Dashboard = () => {
             New Order
           </button>
 
-          <button className="nav-item">
+          <button
+            className="nav-item"
+            onClick={() => navigate('/retailer/orders')}
+          >
             <span>📦</span>
             My Orders
           </button>
 
-          <button className="nav-item">
+          <button
+            className="nav-item"
+            onClick={() => navigate('/retailer/payments')}
+          >
             <span>💳</span>
             Payments
           </button>
 
-          <button className="nav-item">
+          <button
+            className="nav-item"
+            onClick={() => navigate('/retailer/settings')}
+          >
             <span>⚙</span>
             Settings
           </button>

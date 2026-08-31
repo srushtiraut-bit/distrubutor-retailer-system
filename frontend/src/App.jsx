@@ -13,6 +13,9 @@ import Payments from './pages/distributor/Payments';
 import RetailerDashboard from './pages/retailer/Dashboard';
 import SelectDistributor from './pages/retailer/SelectDistributor';
 import BrowseProducts from './pages/retailer/BrowseProducts';
+import OrderHistory from './pages/retailer/OrderHistory';
+import PaymentHistory from './pages/retailer/PaymentHistory';
+import Settings from './pages/retailer/Settings';
 
 function App() {
   return (
@@ -51,6 +54,33 @@ function App() {
             element={
               <ProtectedRoute allowedRole="retailer">
                 <BrowseProducts />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/retailer/orders"
+            element={
+              <ProtectedRoute allowedRole="retailer">
+                <OrderHistory />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/retailer/payments"
+            element={
+              <ProtectedRoute allowedRole="retailer">
+                <PaymentHistory />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/retailer/settings"
+            element={
+              <ProtectedRoute allowedRole="retailer">
+                <Settings />
               </ProtectedRoute>
             }
           />

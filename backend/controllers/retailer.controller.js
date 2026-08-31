@@ -55,3 +55,45 @@ exports.getRecentOrders = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+exports.getAllOrders = async (req, res) => {
+  try {
+    const retailerId = req.user.id;
+
+    const [orders] = await pool.query(
+      `SELECT O.Order_ID, O.Order_Date, O.Total_Bill, O.Order_Status,
+              P.Payment_Status
+       FROM ORDERS O
+       LEFT JOIN PAYMENT P ON O.Order_ID = P.Order_ID
+       WHERE O.Retailer_ID = ?
+       ORDER BY O.Order_Date DESC`,
+      [retailerId]
+    );
+
+    res.status(200).json(orders);
+  } catch (err) {
+    console.error('All orders error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.getAllPayments = async (req, res) => {
+  try {
+    const retailerId = req.user.id;
+
+    const [payments] = await pool.query(
+      `SELECT P.Payment_ID, P.Order_ID, P.Total_Amount, P.Amount_Paid,
+              (P.Total_Amount - P.Amount_Paid) AS Amount_Due,
+              P.Payment_Status, O.Order_Date
+       FROM PAYMENT P
+       JOIN ORDERS O ON P.Order_ID = O.Order_ID
+       WHERE O.Retailer_ID = ?
+       ORDER BY O.Order_Date DESC`,
+      [retailerId]
+    );
+
+    res.status(200).json(payments);
+  } catch (err) {
+    console.error('All payments error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
