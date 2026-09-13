@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getMyProducts, addProduct, updateProduct, deleteProduct } from '../../api/productApi';
-import Sidebar from '../../components/distributor/Sidebar';
+import { AuthContext } from '../../context/AuthContext';
 import './Dashboard.css';
 import './ManageProducts.css';
 
 const emptyForm = { name: '', cost_price: '', selling_price: '', category: '', unit: '' };
 
 const ManageProducts = () => {
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -80,9 +84,70 @@ const ManageProducts = () => {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
-    <div className="dashboard-shell">
-      <Sidebar active="Products" />
+    <div className="dashboard-container">
+
+      <aside className="sidebar">
+        <div className="sidebar-brand">
+          <div className="sidebar-logo">S</div>
+          <span>SmartSupply</span>
+        </div>
+
+        <nav className="sidebar-nav">
+          <button className="nav-item" onClick={() => navigate('/distributor/dashboard')}>
+            <span>▦</span>
+            Home
+          </button>
+          <button className="nav-item active" onClick={() => navigate('/distributor/products')}>
+            <span>📦</span>
+            Products
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/stock')}>
+            <span>📊</span>
+            Stock
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/orders')}>
+            <span>🛒</span>
+            Orders
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/payments')}>
+            <span>💳</span>
+            Payments
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/expenses')}>
+            <span>🧾</span>
+            Expenses
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/profit-loss')}>
+            <span>📈</span>
+            Profit &amp; Loss
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/settings')}>
+            <span>⚙</span>
+            Settings
+          </button>
+        </nav>
+
+        <div className="sidebar-bottom">
+          <div className="user-mini">
+            <div className="avatar">
+              {user?.name?.charAt(0).toUpperCase() || 'D'}
+            </div>
+            <div>
+              <strong>{user?.name || 'Distributor'}</strong>
+              <small>Distributor</small>
+            </div>
+          </div>
+          <button className="logout-button" onClick={handleLogout}>
+            ↪ Logout
+          </button>
+        </div>
+      </aside>
 
       <main className="dashboard-main">
         <header className="dashboard-header products-header">

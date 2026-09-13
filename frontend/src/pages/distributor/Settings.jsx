@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { getProfile, updateProfile, changePassword, changeEmail } from '../../api/retailerApi';
+import { getProfile, updateProfile, changePassword, changeEmail } from '../../api/distributorApi';
 import './Dashboard.css';
 
 const inputStyle = { width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '8px' };
@@ -13,7 +13,8 @@ const Settings = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    name: '', email: '', contact: '', alternate_contact: '', address: '', shop_type: '', gst_no: '',
+    name: '', email: '', contact: '', alternate_contact: '', address: '', type_of_shop: '', gst_no: '',
+    food_license_validity: '', opening_time: '', closing_time: '',
     email_notifications: true, order_notifications: true, promo_notifications: false,
   });
   const [loading, setLoading] = useState(true);
@@ -44,8 +45,11 @@ const Settings = () => {
           contact: p.contact || '',
           alternate_contact: p.alternate_contact || '',
           address: p.address || '',
-          shop_type: p.shop_type || '',
+          type_of_shop: p.type_of_shop || '',
           gst_no: p.gst_no || '',
+          food_license_validity: p.food_license_validity ? p.food_license_validity.split('T')[0] : '',
+          opening_time: p.opening_time || '',
+          closing_time: p.closing_time || '',
           email_notifications: !!p.email_notifications,
           order_notifications: !!p.order_notifications,
           promo_notifications: !!p.promo_notifications,
@@ -156,17 +160,26 @@ const Settings = () => {
         </div>
 
         <nav className="sidebar-nav">
-          <button className="nav-item" onClick={() => navigate('/retailer/dashboard')}>
-            <span>▦</span>Dashboard
+          <button className="nav-item" onClick={() => navigate('/distributor/dashboard')}>
+            <span>▦</span>Home
           </button>
-          <button className="nav-item" onClick={() => navigate('/retailer/select-distributor')}>
-            <span>🛒</span>New Order
+          <button className="nav-item" onClick={() => navigate('/distributor/products')}>
+            <span>📦</span>Products
           </button>
-          <button className="nav-item" onClick={() => navigate('/retailer/orders')}>
-            <span>📦</span>My Orders
+          <button className="nav-item" onClick={() => navigate('/distributor/stock')}>
+            <span>📊</span>Stock
           </button>
-          <button className="nav-item" onClick={() => navigate('/retailer/payments')}>
+          <button className="nav-item" onClick={() => navigate('/distributor/orders')}>
+            <span>🛒</span>Orders
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/payments')}>
             <span>💳</span>Payments
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/expenses')}>
+            <span>🧾</span>Expenses
+          </button>
+          <button className="nav-item" onClick={() => navigate('/distributor/profit-loss')}>
+            <span>📈</span>Profit &amp; Loss
           </button>
           <button className="nav-item active">
             <span>⚙</span>Settings
@@ -175,10 +188,10 @@ const Settings = () => {
 
         <div className="sidebar-bottom">
           <div className="user-mini">
-            <div className="avatar">{user?.name?.charAt(0).toUpperCase() || 'U'}</div>
+            <div className="avatar">{user?.name?.charAt(0).toUpperCase() || 'D'}</div>
             <div>
-              <strong>{user?.name || 'User'}</strong>
-              <small>Retailer</small>
+              <strong>{user?.name || 'Distributor'}</strong>
+              <small>Distributor</small>
             </div>
           </div>
           <button className="logout-button" onClick={handleLogout}>↪ Logout</button>
@@ -189,8 +202,8 @@ const Settings = () => {
         <header className="dashboard-header">
           <div>
             <p className="dashboard-label">SETTINGS</p>
-            <h1>Your Profile</h1>
-            <p className="dashboard-subtitle">Manage your account details</p>
+            <h1>Business Profile</h1>
+            <p className="dashboard-subtitle">Manage your business details</p>
           </div>
         </header>
 
@@ -201,10 +214,10 @@ const Settings = () => {
               <p>Loading profile...</p>
             ) : (
               <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h3 style={{ margin: 0 }}>Profile Details</h3>
+                <h3 style={{ margin: 0 }}>Business Details</h3>
 
                 <div>
-                  <label style={labelStyle}>Full Name</label>
+                  <label style={labelStyle}>Business Name</label>
                   <input type="text" name="name" value={formData.name} onChange={handleChange} required style={inputStyle} />
                 </div>
 
@@ -229,18 +242,34 @@ const Settings = () => {
                 </div>
 
                 <div>
-                  <label style={labelStyle}>Shop Type</label>
-                  <select name="shop_type" value={formData.shop_type} onChange={handleChange} required style={inputStyle}>
-                    <option value="">Select shop type</option>
-                    <option value="Grocery Store">Grocery Store</option>
-                    <option value="Supermarket">Supermarket</option>
-                    <option value="Dairy Shop">Dairy Shop</option>
+                  <label style={labelStyle}>Type of Shop</label>
+                  <select name="type_of_shop" value={formData.type_of_shop} onChange={handleChange} required style={inputStyle}>
+                    <option value="">Select type</option>
+                    <option value="Dairy Distributor">Dairy Distributor</option>
+                    <option value="Amul Distributor">Amul Distributor</option>
+                    <option value="Wholesale Distributor">Wholesale Distributor</option>
                   </select>
                 </div>
 
                 <div>
                   <label style={labelStyle}>GST Number</label>
                   <input type="text" name="gst_no" value={formData.gst_no} onChange={handleChange} style={inputStyle} />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>Food License Validity</label>
+                  <input type="date" name="food_license_validity" value={formData.food_license_validity} onChange={handleChange} required style={inputStyle} />
+                </div>
+
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>Opening Time</label>
+                    <input type="time" name="opening_time" value={formData.opening_time} onChange={handleChange} required style={inputStyle} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>Closing Time</label>
+                    <input type="time" name="closing_time" value={formData.closing_time} onChange={handleChange} required style={inputStyle} />
+                  </div>
                 </div>
 
                 <div>
@@ -252,7 +281,7 @@ const Settings = () => {
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'normal' }}>
                       <input type="checkbox" name="order_notifications" checked={formData.order_notifications} onChange={handleChange} />
-                      Order status updates
+                      New order alerts
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'normal' }}>
                       <input type="checkbox" name="promo_notifications" checked={formData.promo_notifications} onChange={handleChange} />

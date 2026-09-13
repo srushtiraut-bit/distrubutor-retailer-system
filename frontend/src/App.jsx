@@ -10,6 +10,8 @@ import ManageStock from './pages/distributor/ManageStock';
 import IncomingOrders from './pages/distributor/IncomingOrders';
 import ProfitLossReport from './pages/distributor/ProfitLossReport';
 import Payments from './pages/distributor/Payments';
+import ManageExpenses from './pages/distributor/ManageExpenses';
+import DistributorSettings from './pages/distributor/Settings';
 import RetailerDashboard from './pages/retailer/Dashboard';
 import SelectDistributor from './pages/retailer/SelectDistributor';
 import BrowseProducts from './pages/retailer/BrowseProducts';
@@ -26,13 +28,79 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/distributor/dashboard" element={<Dashboard />} />
-          <Route path="/distributor/products" element={<ManageProducts />} />
-          <Route path="/distributor/stock" element={<ManageStock />} />
-          <Route path="/distributor/orders" element={<IncomingOrders />} />
-          <Route path="/distributor/profit-loss" element={<ProfitLossReport />} />
-          <Route path="/distributor/payments" element={<Payments />} />
           <Route path="/" element={<Navigate to="/login" />} />
+
+          <Route
+            path="/distributor/dashboard"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/distributor/products"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <ManageProducts />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/distributor/stock"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <ManageStock />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/distributor/orders"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <IncomingOrders />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/distributor/profit-loss"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <ProfitLossReport />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/distributor/payments"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <Payments />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/distributor/expenses"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <ManageExpenses />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/distributor/settings"
+            element={
+              <ProtectedRoute allowedRole="distributor">
+                <DistributorSettings />
+              </ProtectedRoute>
+            }
+          />
 
           <Route
             path="/retailer/dashboard"
@@ -51,6 +119,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/retailer/browse-products/:distributorId"
             element={
@@ -95,14 +164,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
           <Route
-  path="/retailer/payment"
-  element={
-    <ProtectedRoute allowedRole="retailer">
-      <Payment />
-    </ProtectedRoute>
-  }
-/>
+            path="/retailer/payment"
+            element={
+              <ProtectedRoute allowedRole="retailer">
+                <Payment />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

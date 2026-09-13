@@ -9,18 +9,30 @@ const DistributorModel = {
     return rows[0];
   },
 
-  async create({ name, contact, address, gst_no, email, hashedPassword }) {
+  async create({
+    name,
+    contact,
+    address,
+    gst_no,
+    food_license_validity,
+    opening_time,
+    closing_time,
+    type_of_shop,
+    email,
+    hashedPassword
+  }) {
     const [result] = await pool.query(
-      `INSERT INTO distributor (name, contact, address, gst_no, email, password)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [name, contact, address, gst_no, email, hashedPassword]
+      `INSERT INTO distributor 
+        (name, contact, address, food_license_validity, opening_time, closing_time, type_of_shop, gst_no, email, password)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [name, contact, address, food_license_validity, opening_time, closing_time, type_of_shop, gst_no, email, hashedPassword]
     );
     return result.insertId;
   },
 
   async findAll() {
     const [rows] = await pool.query(
-      'SELECT distributor_id, name, email, contact FROM distributor'
+      'SELECT distributor_id, name, email, contact, type_of_shop, opening_time, closing_time FROM distributor'
     );
     return rows;
   }
