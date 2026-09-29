@@ -3,6 +3,17 @@
 }
 
 .login-page {
+  max-width: 1126px;
+  margin: 0 auto;
+  border-inline: 1px solid #e5e4e7;
+}
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+}
+.login-page {
   min-height: 100vh;
   display: flex;
   font-family: Arial, sans-serif;

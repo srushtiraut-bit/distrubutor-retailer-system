@@ -11,8 +11,17 @@ const Signup = () => {
     email: '',
     password: '',
     confirmPassword: '',
+    contact: '',
+    address: '',
+    gst_no: '',
+    shop_type: '',           // retailer only
+    food_license_validity: '', // distributor only
+    opening_time: '',          // distributor only
+    closing_time: '',          // distributor only
+    type_of_shop: '',          // distributor only
   });
 
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
@@ -25,6 +34,23 @@ const Signup = () => {
       [e.target.name]: e.target.value,
     });
   };
+
+  // Simple password strength check
+  const getPasswordStrength = (pw) => {
+    if (!pw) return null;
+    if (pw.length < 6) return { label: 'Too short', color: '#e53935' };
+    let score = 0;
+    if (pw.length >= 8) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    if (score <= 1) return { label: 'Weak', color: '#e53935' };
+    if (score <= 2) return { label: 'Okay', color: '#f9a825' };
+    if (score === 3) return { label: 'Good', color: '#43a047' };
+    return { label: 'Strong', color: '#2e7d32' };
+  };
+
+  const strength = getPasswordStrength(formData.password);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,15 +68,34 @@ const Signup = () => {
       return;
     }
 
+    if (!agreed) {
+      setError('Please agree to the Terms & Conditions to continue');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await signupUser({
+      const payload = {
         role,
         name: formData.name,
         email: formData.email,
         password: formData.password,
-      });
+        contact: formData.contact,
+        address: formData.address,
+        gst_no: formData.gst_no,
+      };
+
+      if (role === 'retailer') {
+        payload.shop_type = formData.shop_type;
+      } else {
+        payload.food_license_validity = formData.food_license_validity;
+        payload.opening_time = formData.opening_time;
+        payload.closing_time = formData.closing_time;
+        payload.type_of_shop = formData.type_of_shop;
+      }
+
+      await signupUser(payload);
 
       setSuccess('Account created successfully!');
 
@@ -137,12 +182,12 @@ const Signup = () => {
 
             {/* NAME */}
             <div className="input-group">
-              <label>Full name</label>
+              <label>{role === 'distributor' ? 'Business name' : 'Full name'}</label>
 
               <input
                 type="text"
                 name="name"
-                placeholder="Enter your name"
+                placeholder={role === 'distributor' ? 'Enter your business name' : 'Enter your name'}
                 value={formData.name}
                 onChange={handleChange}
                 required
@@ -163,6 +208,123 @@ const Signup = () => {
               />
             </div>
 
+            {/* CONTACT */}
+            <div className="input-group">
+              <label>Contact number</label>
+
+              <input
+                type="tel"
+                name="contact"
+                placeholder="Enter your phone number"
+                value={formData.contact}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* ADDRESS */}
+            <div className="input-group">
+              <label>Address</label>
+
+              <input
+                type="text"
+                name="address"
+                placeholder="Enter your shop/business address"
+                value={formData.address}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            {/* RETAILER-ONLY: SHOP TYPE */}
+            {role === 'retailer' && (
+              <div className="input-group">
+                <label>Shop type</label>
+
+                <select
+                  name="shop_type"
+                  value={formData.shop_type}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="">Select shop type</option>
+                  <option value="Grocery Store">Grocery Store</option>
+                  <option value="Supermarket">Supermarket</option>
+                  <option value="Dairy Shop">Dairy Shop</option>
+                </select>
+              </div>
+            )}
+
+            {/* DISTRIBUTOR-ONLY FIELDS */}
+            {role === 'distributor' && (
+              <>
+                <div className="input-group">
+                  <label>Type of shop</label>
+
+                  <select
+                    name="type_of_shop"
+                    value={formData.type_of_shop}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="">Select type</option>
+                    <option value="Dairy Distributor">Dairy Distributor</option>
+                    <option value="Amul Distributor">Amul Distributor</option>
+                    <option value="Wholesale Distributor">Wholesale Distributor</option>
+                  </select>
+                </div>
+
+                <div className="input-group">
+                  <label>Food license validity</label>
+
+                  <input
+                    type="date"
+                    name="food_license_validity"
+                    value={formData.food_license_validity}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="input-group" style={{ display: 'flex', gap: '10px' }}>
+                  <div style={{ flex: 1 }}>
+                    <label>Opening time</label>
+                    <input
+                      type="time"
+                      name="opening_time"
+                      value={formData.opening_time}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <label>Closing time</label>
+                    <input
+                      type="time"
+                      name="closing_time"
+                      value={formData.closing_time}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* GST NUMBER */}
+            <div className="input-group">
+              <label>GST number {role === 'retailer' ? '(optional)' : ''}</label>
+
+              <input
+                type="text"
+                name="gst_no"
+                placeholder="Enter GST number"
+                value={formData.gst_no}
+                onChange={handleChange}
+                required={role === 'distributor'}
+              />
+            </div>
+
             {/* PASSWORD */}
             <div className="input-group">
               <label>Password</label>
@@ -175,6 +337,11 @@ const Signup = () => {
                 onChange={handleChange}
                 required
               />
+              {strength && (
+                <div style={{ fontSize: '12px', marginTop: '4px', color: strength.color }}>
+                  Password strength: {strength.label}
+                </div>
+              )}
             </div>
 
             {/* CONFIRM PASSWORD */}
@@ -189,6 +356,19 @@ const Signup = () => {
                 onChange={handleChange}
                 required
               />
+            </div>
+
+            {/* TERMS CHECKBOX */}
+            <div className="input-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input
+                type="checkbox"
+                id="agree"
+                checked={agreed}
+                onChange={(e) => setAgreed(e.target.checked)}
+              />
+              <label htmlFor="agree" style={{ margin: 0, fontWeight: 'normal', fontSize: '14px' }}>
+                I agree to the Terms & Conditions and Privacy Policy
+              </label>
             </div>
 
             {/* ERROR */}

@@ -1,10 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getMyProfitLoss } from '../../api/profitLossApi';
-import Sidebar from '../../components/distributor/Sidebar';
+import { AuthContext } from '../../context/AuthContext';
 import './Dashboard.css';
 import './ProfitLossReport.css';
 
 const ProfitLossReport = () => {
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -23,18 +27,97 @@ const ProfitLossReport = () => {
     fetchData();
   }, []);
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
+  const Sidebar = () => (
+    <aside className="sidebar">
+      <div className="sidebar-brand">
+        <div className="sidebar-logo">S</div>
+        <span>SmartSupply</span>
+      </div>
+
+      <nav className="sidebar-nav">
+        <button className="nav-item" onClick={() => navigate('/distributor/dashboard')}>
+          <span>▦</span>
+          Home
+        </button>
+        <button className="nav-item" onClick={() => navigate('/distributor/products')}>
+          <span>📦</span>
+          Products
+        </button>
+        <button className="nav-item" onClick={() => navigate('/distributor/stock')}>
+          <span>📊</span>
+          Stock
+        </button>
+        <button className="nav-item" onClick={() => navigate('/distributor/orders')}>
+          <span>🛒</span>
+          Orders
+        </button>
+        <button className="nav-item" onClick={() => navigate('/distributor/payments')}>
+          <span>💳</span>
+          Payments
+        </button>
+        <button className="nav-item" onClick={() => navigate('/distributor/expenses')}>
+          <span>🧾</span>
+          Expenses
+        </button>
+        <button className="nav-item active" onClick={() => navigate('/distributor/profit-loss')}>
+          <span>📈</span>
+          Profit &amp; Loss
+        </button>
+        <button className="nav-item" onClick={() => navigate('/distributor/settings')}>
+          <span>⚙</span>
+          Settings
+        </button>
+      </nav>
+
+      <div className="sidebar-bottom">
+        <div className="user-mini">
+          <div className="avatar">
+            {user?.name?.charAt(0).toUpperCase() || 'D'}
+          </div>
+          <div>
+            <strong>{user?.name || 'Distributor'}</strong>
+            <small>Distributor</small>
+          </div>
+        </div>
+        <button className="logout-button" onClick={handleLogout}>
+          ↪ Logout
+        </button>
+      </div>
+    </aside>
+  );
+
   if (loading) {
-    return <div className="dashboard-shell"><Sidebar active="Profit & Loss" /><div className="dashboard-loading">Loading report...</div></div>;
+    return (
+      <div className="dashboard-container">
+        <Sidebar />
+        <main className="dashboard-main">
+          <div className="dashboard-loading">Loading report...</div>
+        </main>
+      </div>
+    );
   }
+
   if (error) {
-    return <div className="dashboard-shell"><Sidebar active="Profit & Loss" /><div className="dashboard-error">{error}</div></div>;
+    return (
+      <div className="dashboard-container">
+        <Sidebar />
+        <main className="dashboard-main">
+          <div className="dashboard-error">{error}</div>
+        </main>
+      </div>
+    );
   }
 
   const { records, summary } = data;
 
   return (
-    <div className="dashboard-shell">
-      <Sidebar active="Profit & Loss" />
+    <div className="dashboard-container">
+      <Sidebar />
 
       <main className="dashboard-main">
         <header className="dashboard-header">
@@ -44,35 +127,35 @@ const ProfitLossReport = () => {
           </div>
         </header>
 
-        <section className="stats-row">
-          <div className="stat-card accent-blue">
-            <div>
-              <div className="stat-label">Total Revenue</div>
-              <div className="stat-value">₹{summary.totalRevenue}</div>
+        <section className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-info">
+              <p>Total Revenue</p>
+              <h2>₹{summary.totalRevenue}</h2>
             </div>
           </div>
-          <div className="stat-card accent-amber">
-            <div>
-              <div className="stat-label">Total Cost</div>
-              <div className="stat-value">₹{summary.totalCost}</div>
+          <div className="stat-card">
+            <div className="stat-info">
+              <p>Total Cost</p>
+              <h2>₹{summary.totalCost}</h2>
             </div>
           </div>
-          <div className="stat-card accent-green">
-            <div>
-              <div className="stat-label">Total Profit</div>
-              <div className="stat-value">₹{summary.totalProfit}</div>
+          <div className="stat-card">
+            <div className="stat-info">
+              <p>Total Profit</p>
+              <h2>₹{summary.totalProfit}</h2>
             </div>
           </div>
-          <div className="stat-card accent-violet">
-            <div>
-              <div className="stat-label">Avg. Margin</div>
-              <div className="stat-value">{Number(summary.avgMargin).toFixed(1)}%</div>
+          <div className="stat-card">
+            <div className="stat-info">
+              <p>Avg. Margin</p>
+              <h2>{Number(summary.avgMargin).toFixed(1)}%</h2>
             </div>
           </div>
         </section>
 
         <section className="orders-card">
-          <div className="orders-card-header">
+          <div className="orders-card-header" style={{ padding: '20px 24px 0' }}>
             <h2>Order-by-Order Breakdown</h2>
           </div>
 

@@ -1,4 +1,5 @@
 const pool = require('../config/db');
+const bcrypt = require('bcryptjs');
 
 exports.getDashboardStats = async (req, res) => {
   try {
@@ -159,5 +160,138 @@ exports.placeOrder = async (req, res) => {
     res.status(500).json({ message: 'Failed to place order', error: err.message });
   } finally {
     connection.release();
+  }
+};
+
+exports.getProfile = async (req, res) => {
+  try {
+    const retailerId = req.user.id;
+    const [[retailer]] = await pool.query(
+      `SELECT Retailer_ID AS id, Name AS name, Email AS email, Contact AS contact,
+              Alternate_Contact AS alternate_contact,
+              Address AS address, Shop_Type AS shop_type, GST_No AS gst_no,
+              Email_Notifications AS email_notifications,
+              Order_Notifications AS order_notifications,
+              Promo_Notifications AS promo_notifications
+       FROM RETAILER WHERE Retailer_ID = ?`,
+      [retailerId]
+    );
+    if (!retailer) return res.status(404).json({ message: 'Retailer not found' });
+    res.status(200).json(retailer);
+  } catch (err) {
+    console.error('Get profile error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.updateProfile = async (req, res) => {
+  try {
+    const retailerId = req.user.id;
+    const {
+      name, email, contact, alternate_contact, address, shop_type, gst_no,
+      email_notifications, order_notifications, promo_notifications
+    } = req.body;
+
+    const [[existing]] = await pool.query(
+      'SELECT Retailer_ID FROM RETAILER WHERE Email = ? AND Retailer_ID != ?',
+      [email, retailerId]
+    );
+    if (existing) {
+      return res.status(400).json({ message: 'That email is already in use' });
+    }
+
+    await pool.query(
+      `UPDATE RETAILER 
+       SET Name = ?, Email = ?, Contact = ?, Alternate_Contact = ?, Address = ?, Shop_Type = ?, GST_No = ?,
+           Email_Notifications = ?, Order_Notifications = ?, Promo_Notifications = ?
+       WHERE Retailer_ID = ?`,
+      [name, email, contact, alternate_contact, address, shop_type, gst_no,
+       email_notifications, order_notifications, promo_notifications, retailerId]
+    );
+
+    res.status(200).json({ message: 'Profile updated successfully' });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const retailerId = req.user.id;
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Both current and new password are required' });
+    }
+
+    const [[retailer]] = await pool.query(
+      'SELECT Password FROM RETAILER WHERE Retailer_ID = ?',
+      [retailerId]
+    );
+
+    if (!retailer) {
+      return res.status(404).json({ message: 'Retailer not found' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, retailer.Password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await pool.query(
+      'UPDATE RETAILER SET Password = ? WHERE Retailer_ID = ?',
+      [hashedPassword, retailerId]
+    );
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (err) {
+    console.error('Change password error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+exports.changeEmail = async (req, res) => {
+  try {
+    const retailerId = req.user.id;
+    const { currentPassword, newEmail } = req.body;
+
+    if (!currentPassword || !newEmail) {
+      return res.status(400).json({ message: 'Current password and new email are required' });
+    }
+
+    const [[retailer]] = await pool.query(
+      'SELECT Password FROM RETAILER WHERE Retailer_ID = ?',
+      [retailerId]
+    );
+
+    if (!retailer) {
+      return res.status(404).json({ message: 'Retailer not found' });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, retailer.Password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Current password is incorrect' });
+    }
+
+    const [[existing]] = await pool.query(
+      'SELECT Retailer_ID FROM RETAILER WHERE Email = ? AND Retailer_ID != ?',
+      [newEmail, retailerId]
+    );
+    if (existing) {
+      return res.status(400).json({ message: 'That email is already in use' });
+    }
+
+    await pool.query(
+      'UPDATE RETAILER SET Email = ? WHERE Retailer_ID = ?',
+      [newEmail, retailerId]
+    );
+
+    res.status(200).json({ message: 'Email changed successfully' });
+  } catch (err) {
+    console.error('Change email error:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };

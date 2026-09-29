@@ -17,7 +17,11 @@ exports.signup = async (req, res) => {
       contact,
       address,
       gst_no,
-      shop_type,      // only used for retailer
+      shop_type,               // retailer only
+      food_license_validity,   // distributor only
+      opening_time,            // distributor only
+      closing_time,            // distributor only
+      type_of_shop,            // distributor only
       email,
       password
     } = req.body;
@@ -41,8 +45,15 @@ exports.signup = async (req, res) => {
 
     const id =
       role === 'distributor'
-        ? await Model.create({ name, contact, address, gst_no, email, hashedPassword })
-        : await Model.create({ name, contact, address, shop_type, gst_no, email, hashedPassword });
+        ? await Model.create({
+            name, contact, address, gst_no,
+            food_license_validity, opening_time, closing_time, type_of_shop,
+            email, hashedPassword
+          })
+        : await Model.create({
+            name, contact, address, shop_type, gst_no,
+            email, hashedPassword
+          });
 
     const token = generateToken(id, role);
 
