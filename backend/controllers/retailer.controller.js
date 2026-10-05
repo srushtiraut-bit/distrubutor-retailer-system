@@ -115,7 +115,9 @@ exports.placeOrder = async (req, res) => {
 
     const productIds = items.map((i) => i.productId);
     const [products] = await connection.query(
-      `SELECT product_id, cost_price, selling_price FROM product WHERE product_id IN (?)`,
+      `SELECT Product_ID AS product_id, Cost_Price AS cost_price, Selling_Price AS selling_price
+       FROM PRODUCT
+       WHERE Product_ID IN (?)`,
       [productIds]
     );
 
@@ -134,8 +136,8 @@ exports.placeOrder = async (req, res) => {
     }
 
     const [orderResult] = await connection.query(
-      `INSERT INTO orders (retailer_id, distributor_id, order_date, total_bill, order_status)
-       VALUES (?, ?, NOW(), ?, 'Pending')`,
+      `INSERT INTO ORDERS (Retailer_ID, Distributor_ID, Order_Date, Total_Bill, Order_Status)
+       VALUES (?, ?, CURDATE(), ?, 'Pending')`,
       [retailerId, distributorId, totalBill]
     );
 
@@ -145,7 +147,7 @@ exports.placeOrder = async (req, res) => {
       const product = productMap[item.productId];
       const subtotal = product.selling_price * item.quantity;
       await connection.query(
-        `INSERT INTO order_item (order_id, product_id, quantity, cost_price, selling_price, subtotal)
+        `INSERT INTO ORDER_ITEM (Order_ID, Product_ID, Quantity, Cost_Price, Selling_Price, Subtotal)
          VALUES (?, ?, ?, ?, ?, ?)`,
         [orderId, item.productId, item.quantity, product.cost_price, product.selling_price, subtotal]
       );
@@ -162,7 +164,6 @@ exports.placeOrder = async (req, res) => {
     connection.release();
   }
 };
-
 exports.getProfile = async (req, res) => {
   try {
     const retailerId = req.user.id;

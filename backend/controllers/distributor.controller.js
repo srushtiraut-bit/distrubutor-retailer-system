@@ -58,22 +58,17 @@ exports.getDashboardStats = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
 exports.getAllDistributors = async (req, res) => {
   try {
-    const [distributors] = await pool.query(
-      `SELECT 
-         distributor_id AS Distributor_ID, 
-         name AS Name, 
-         contact AS Contact, 
-         address AS Address, 
-         type_of_shop AS Type_of_Shop 
-       FROM distributor`
+    const [rows] = await pool.query(
+      `SELECT Distributor_ID, Name, Contact, Address, Type_of_Shop
+       FROM DISTRIBUTOR
+       ORDER BY Name`
     );
-    res.status(200).json(distributors);
-  } catch (err) {
-    console.error('Get all distributors error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.json(rows);
+  } catch (error) {
+    console.error('Get all distributors error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
