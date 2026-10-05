@@ -7,6 +7,7 @@ exports.getMyOrders = async (req, res) => {
     const orders = await OrderModel.findAllByDistributor(req.user.id);
     res.status(200).json(orders);
   } catch (err) {
+    console.error('Get orders error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
@@ -20,6 +21,7 @@ exports.getOrderItems = async (req, res) => {
     const items = await OrderItemModel.findByOrder(id);
     res.status(200).json(items);
   } catch (err) {
+    console.error('Get order items error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
@@ -38,15 +40,16 @@ exports.updateOrderStatus = async (req, res) => {
 
     await OrderModel.updateStatus(id, status);
 
-    if (status === 'Delivered' && order.Order_Status !== 'Delivered') {
+    if (status === 'Delivered' && order.order_status !== 'Delivered') {
       const items = await OrderItemModel.findByOrder(id);
       for (const item of items) {
-        await StockModel.reduceForDelivery(item.Product_ID, req.user.id, item.quantity);
+        await StockModel.reduceForDelivery(item.product_id, req.user.id, item.quantity);
       }
     }
 
     res.status(200).json({ message: 'Order status updated' });
   } catch (err) {
+    console.error('Update order status error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
