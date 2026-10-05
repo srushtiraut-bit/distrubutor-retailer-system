@@ -7,6 +7,15 @@ import './IncomingOrders.css';
 
 const STATUS_OPTIONS = ['Pending', 'Confirmed', 'Shipped', 'Delivered', 'Paid'];
 
+const dateInputStyle = {
+  padding: '8px 10px',
+  borderRadius: '8px',
+  border: '1px solid #cbd5e1',
+  background: '#fff',
+  color: '#0f172a',
+  fontSize: '14px',
+};
+
 const IncomingOrders = () => {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -17,6 +26,8 @@ const IncomingOrders = () => {
   const [expandedId, setExpandedId] = useState(null);
   const [orderItems, setOrderItems] = useState({});
   const [updatingId, setUpdatingId] = useState(null);
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
 
   const loadOrders = async () => {
     try {
@@ -66,10 +77,27 @@ const IncomingOrders = () => {
     navigate('/login');
   };
 
+  // Date filter (compares only the date part, YYYY-MM-DD, in local time)
+  const toDateKey = (value) => {
+    const d = new Date(value);
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + month + '-' + day;
+  };
+
+  const filteredOrders = orders.filter((order) => {
+    const key = toDateKey(order.order_date);
+    if (fromDate && key < fromDate) return false;
+    if (toDate && key > toDate) return false;
+    return true;
+  });
+
+  const isFiltering = fromDate || toDate;
+
   return (
     <div className="dashboard-container">
 
-      {/* SIDEBAR — same structure as Home */}
+      {/* SIDEBAR */}
       <aside className="sidebar">
         <div className="sidebar-brand">
           <div className="sidebar-logo">S</div>
@@ -136,6 +164,60 @@ const IncomingOrders = () => {
           </div>
         </header>
 
+        {/* DATE FILTER */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-end',
+            gap: '12px',
+            flexWrap: 'wrap',
+            marginBottom: '16px',
+          }}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontSize: '13px', fontWeight: 600 }}>From date</label>
+            <input
+              type="date"
+              value={fromDate}
+              max={toDate || undefined}
+              onChange={(e) => setFromDate(e.target.value)}
+              style={dateInputStyle}
+            />
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontSize: '13px', fontWeight: 600 }}>To date</label>
+            <input
+              type="date"
+              value={toDate}
+              min={fromDate || undefined}
+              onChange={(e) => setToDate(e.target.value)}
+              style={dateInputStyle}
+            />
+          </div>
+
+          {isFiltering && (
+            <button
+              type="button"
+              onClick={() => {
+                setFromDate('');
+                setToDate('');
+              }}
+              style={{
+                padding: '9px 14px',
+                borderRadius: '8px',
+                border: '1px solid #cbd5e1',
+                color: '#0f172a',
+                background: '#fff',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
         <section className="orders-card">
           {loading ? (
             <div className="dashboard-loading">Loading orders...</div>
@@ -145,6 +227,11 @@ const IncomingOrders = () => {
             <div className="empty-state">
               <p>No orders yet</p>
               <span>Once a retailer places an order with you, it'll show up here.</span>
+            </div>
+          ) : filteredOrders.length === 0 ? (
+            <div className="empty-state">
+              <p>No orders in this date range</p>
+              <span>Try changing or clearing the dates.</span>
             </div>
           ) : (
             <table className="orders-table">
@@ -159,7 +246,7 @@ const IncomingOrders = () => {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order) => (
+                {filteredOrders.map((order) => (
                   <Fragment key={order.order_id}>
                     <tr>
                       <td>
@@ -176,7 +263,7 @@ const IncomingOrders = () => {
                           value={order.order_status}
                           onChange={(e) => handleStatusChange(order.order_id, e.target.value)}
                           disabled={updatingId === order.order_id}
-                          className={`status-select status-${order.order_status.toLowerCase()}`}
+                          className={'status-select status-' + order.order_status.toLowerCase()}
                         >
                           {STATUS_OPTIONS.map((s) => (
                             <option key={s} value={s}>{s}</option>
