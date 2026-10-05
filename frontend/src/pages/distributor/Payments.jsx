@@ -39,8 +39,8 @@ const Payments = () => {
     setEditingId(p.order_id);
     setForm({
       amount_paid: p.amount_paid,
-      payment_status: p.payment_status,
-      payment_mode: p.payment_mode,
+      payment_status: p.payment_status || 'Pending',
+      payment_mode: p.payment_mode || 'Cash',
     });
   };
 
@@ -194,7 +194,9 @@ const Payments = () => {
                           {STATUS_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
                         </select>
                       ) : (
-                        <span className={`status-badge status-${p.payment_status.toLowerCase()}`}>{p.payment_status}</span>
+                        <span className={`status-badge status-${(p.payment_status || 'pending').toLowerCase()}`}>
+                          {p.payment_status || 'Pending'}
+                        </span>
                       )}
                     </td>
                     <td className="actions-cell">

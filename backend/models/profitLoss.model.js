@@ -3,12 +3,12 @@ const pool = require('../config/db');
 const ProfitLossModel = {
   async findAllByDistributor(distributorId) {
     const [rows] = await pool.query(
-      `SELECT pl.pl_id, pl.order_id, pl.date, pl.total_cost_price,
-              pl.total_selling_price, pl.profit_or_loss, pl.percentage
-       FROM profit_loss pl
-       JOIN orders o ON pl.order_id = o.order_id
-       WHERE o.distributor_id = ?
-       ORDER BY pl.date DESC`,
+      `SELECT pl.PL_ID, pl.Order_ID, pl.Date, pl.Total_Cost_Price,
+              pl.Total_Selling_Price, pl.Profit_or_Loss, pl.Percentage
+       FROM PROFIT_LOSS pl
+       JOIN ORDERS o ON pl.Order_ID = o.Order_ID
+       WHERE o.Distributor_ID = ?
+       ORDER BY pl.Date DESC`,
       [distributorId]
     );
     return rows;
@@ -16,12 +16,12 @@ const ProfitLossModel = {
 
   async findByDistributorAndDateRange(distributorId, startDate, endDate) {
     const [rows] = await pool.query(
-      `SELECT pl.pl_id, pl.order_id, pl.date, pl.total_cost_price,
-              pl.total_selling_price, pl.profit_or_loss, pl.percentage
-       FROM profit_loss pl
-       JOIN orders o ON pl.order_id = o.order_id
-       WHERE o.distributor_id = ? AND pl.date BETWEEN ? AND ?
-       ORDER BY pl.date DESC`,
+      `SELECT pl.PL_ID, pl.Order_ID, pl.Date, pl.Total_Cost_Price,
+              pl.Total_Selling_Price, pl.Profit_or_Loss, pl.Percentage
+       FROM PROFIT_LOSS pl
+       JOIN ORDERS o ON pl.Order_ID = o.Order_ID
+       WHERE o.Distributor_ID = ? AND pl.Date BETWEEN ? AND ?
+       ORDER BY pl.Date DESC`,
       [distributorId, startDate, endDate]
     );
     return rows;
@@ -30,13 +30,13 @@ const ProfitLossModel = {
   async getSummaryByDistributor(distributorId) {
     const [[summary]] = await pool.query(
       `SELECT
-         SUM(pl.total_cost_price) AS totalCost,
-         SUM(pl.total_selling_price) AS totalRevenue,
-         SUM(pl.total_selling_price - pl.total_cost_price) AS totalProfit,
-         AVG(pl.percentage) AS avgMargin
-       FROM profit_loss pl
-       JOIN orders o ON pl.order_id = o.order_id
-       WHERE o.distributor_id = ?`,
+         SUM(pl.Total_Cost_Price) AS totalCost,
+         SUM(pl.Total_Selling_Price) AS totalRevenue,
+         SUM(pl.Total_Selling_Price - pl.Total_Cost_Price) AS totalProfit,
+         AVG(pl.Percentage) AS avgMargin
+       FROM PROFIT_LOSS pl
+       JOIN ORDERS o ON pl.Order_ID = o.Order_ID
+       WHERE o.Distributor_ID = ?`,
       [distributorId]
     );
     return summary;
@@ -45,13 +45,13 @@ const ProfitLossModel = {
   async getSummaryByDistributorAndDateRange(distributorId, startDate, endDate) {
     const [[summary]] = await pool.query(
       `SELECT
-         SUM(pl.total_cost_price) AS totalCost,
-         SUM(pl.total_selling_price) AS totalRevenue,
-         SUM(pl.total_selling_price - pl.total_cost_price) AS totalProfit,
-         AVG(pl.percentage) AS avgMargin
-       FROM profit_loss pl
-       JOIN orders o ON pl.order_id = o.order_id
-       WHERE o.distributor_id = ? AND pl.date BETWEEN ? AND ?`,
+         SUM(pl.Total_Cost_Price) AS totalCost,
+         SUM(pl.Total_Selling_Price) AS totalRevenue,
+         SUM(pl.Total_Selling_Price - pl.Total_Cost_Price) AS totalProfit,
+         AVG(pl.Percentage) AS avgMargin
+       FROM PROFIT_LOSS pl
+       JOIN ORDERS o ON pl.Order_ID = o.Order_ID
+       WHERE o.Distributor_ID = ? AND pl.Date BETWEEN ? AND ?`,
       [distributorId, startDate, endDate]
     );
     return summary;

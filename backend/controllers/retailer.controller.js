@@ -115,13 +115,13 @@ exports.placeOrder = async (req, res) => {
 
     const productIds = items.map((i) => i.productId);
     const [products] = await connection.query(
-      `SELECT product_id, cost_price, selling_price FROM product WHERE product_id IN (?)`,
+      `SELECT Product_ID, Cost_Price, Selling_Price FROM PRODUCT WHERE Product_ID IN (?)`,
       [productIds]
     );
 
     const productMap = {};
     products.forEach((p) => {
-      productMap[p.product_id] = p;
+      productMap[p.Product_ID] = p;
     });
 
     let totalBill = 0;
@@ -130,11 +130,11 @@ exports.placeOrder = async (req, res) => {
       if (!product) {
         throw new Error(`Product ${item.productId} not found`);
       }
-      totalBill += product.selling_price * item.quantity;
+      totalBill += product.Selling_Price * item.quantity;
     }
 
     const [orderResult] = await connection.query(
-      `INSERT INTO orders (retailer_id, distributor_id, order_date, total_bill, order_status)
+      `INSERT INTO ORDERS (Retailer_ID, Distributor_ID, Order_Date, Total_Bill, Order_Status)
        VALUES (?, ?, NOW(), ?, 'Pending')`,
       [retailerId, distributorId, totalBill]
     );
@@ -143,11 +143,11 @@ exports.placeOrder = async (req, res) => {
 
     for (const item of items) {
       const product = productMap[item.productId];
-      const subtotal = product.selling_price * item.quantity;
+      const subtotal = product.Selling_Price * item.quantity;
       await connection.query(
-        `INSERT INTO order_item (order_id, product_id, quantity, cost_price, selling_price, subtotal)
+        `INSERT INTO ORDER_ITEM (Order_ID, Product_ID, Quantity, Cost_Price, Selling_Price, Subtotal)
          VALUES (?, ?, ?, ?, ?, ?)`,
-        [orderId, item.productId, item.quantity, product.cost_price, product.selling_price, subtotal]
+        [orderId, item.productId, item.quantity, product.Cost_Price, product.Selling_Price, subtotal]
       );
     }
 

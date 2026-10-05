@@ -38,10 +38,10 @@ exports.updateOrderStatus = async (req, res) => {
 
     await OrderModel.updateStatus(id, status);
 
-    if (status === 'Delivered' && order.order_status !== 'Delivered') {
+    if (status === 'Delivered' && order.Order_Status !== 'Delivered') {
       const items = await OrderItemModel.findByOrder(id);
       for (const item of items) {
-        await StockModel.reduceForDelivery(item.product_id, req.user.id, item.quantity);
+        await StockModel.reduceForDelivery(item.Product_ID, req.user.id, item.quantity);
       }
     }
 

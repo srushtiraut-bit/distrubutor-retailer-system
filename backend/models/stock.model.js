@@ -3,13 +3,19 @@ const pool = require('../config/db');
 const StockModel = {
   async findAllByDistributor(distributorId) {
     const [rows] = await pool.query(
-      `SELECT s.stock_id, s.product_id, p.name AS product_name,
-              s.input_quantity, s.output_quantity, s.remaining_quantity,
-              s.date, s.expiry
-       FROM stock s
-       JOIN product p ON s.product_id = p.product_id
-       WHERE s.distributor_id = ?
-       ORDER BY s.stock_id DESC`,
+      `SELECT s.Stock_ID AS id,
+              s.Stock_ID AS stock_id,
+              s.Product_ID AS product_id,
+              p.Name AS product_name,
+              s.Input_Quantity AS input_quantity,
+              s.Output_Quantity AS output_quantity,
+              s.Remaining_Quantity AS remaining_quantity,
+              DATE_FORMAT(s.Date, '%Y-%m-%d') AS date,
+              DATE_FORMAT(s.Expiry, '%Y-%m-%d') AS expiry
+       FROM STOCK s
+       JOIN PRODUCT p ON s.Product_ID = p.Product_ID
+       WHERE s.Distributor_ID = ?
+       ORDER BY s.Stock_ID DESC`,
       [distributorId]
     );
     return rows;
@@ -17,7 +23,7 @@ const StockModel = {
 
   async create({ distributorId, product_id, input_quantity, date, expiry }) {
     const [result] = await pool.query(
-      `INSERT INTO stock (distributor_id, product_id, input_quantity, output_quantity, remaining_quantity, date, expiry)
+      `INSERT INTO STOCK (Distributor_ID, Product_ID, Input_Quantity, Output_Quantity, Remaining_Quantity, Date, Expiry)
        VALUES (?, ?, ?, 0, ?, ?, ?)`,
       [distributorId, product_id, input_quantity, input_quantity, date, expiry]
     );
@@ -27,8 +33,8 @@ const StockModel = {
   async update(id, distributorId, { input_quantity, output_quantity, date, expiry }) {
     const remaining_quantity = input_quantity - output_quantity;
     const [result] = await pool.query(
-      `UPDATE stock SET input_quantity = ?, output_quantity = ?, remaining_quantity = ?, date = ?, expiry = ?
-       WHERE stock_id = ? AND distributor_id = ?`,
+      `UPDATE STOCK SET Input_Quantity = ?, Output_Quantity = ?, Remaining_Quantity = ?, Date = ?, Expiry = ?
+       WHERE Stock_ID = ? AND Distributor_ID = ?`,
       [input_quantity, output_quantity, remaining_quantity, date, expiry, id, distributorId]
     );
     return result.affectedRows;
@@ -36,7 +42,7 @@ const StockModel = {
 
   async remove(id, distributorId) {
     const [result] = await pool.query(
-      'DELETE FROM stock WHERE stock_id = ? AND distributor_id = ?',
+      'DELETE FROM STOCK WHERE Stock_ID = ? AND Distributor_ID = ?',
       [id, distributorId]
     );
     return result.affectedRows;
@@ -44,10 +50,10 @@ const StockModel = {
 
   async reduceForDelivery(productId, distributorId, quantity) {
     const [result] = await pool.query(
-      `UPDATE stock
-       SET output_quantity = output_quantity + ?, remaining_quantity = remaining_quantity - ?
-       WHERE product_id = ? AND distributor_id = ?
-       ORDER BY stock_id DESC LIMIT 1`,
+      `UPDATE STOCK
+       SET Output_Quantity = Output_Quantity + ?, Remaining_Quantity = Remaining_Quantity - ?
+       WHERE Product_ID = ? AND Distributor_ID = ?
+       ORDER BY Stock_ID DESC LIMIT 1`,
       [quantity, quantity, productId, distributorId]
     );
     return result.affectedRows;

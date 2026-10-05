@@ -6,39 +6,39 @@ exports.getDashboardStats = async (req, res) => {
     const distributorId = req.user.id;
 
     const [[distributorInfo]] = await pool.query(
-      'SELECT name, email, contact FROM distributor WHERE distributor_id = ?',
+      'SELECT Name AS name, Email AS email, Contact AS contact FROM DISTRIBUTOR WHERE Distributor_ID = ?',
       [distributorId]
     );
 
     const [[productCount]] = await pool.query(
-      'SELECT COUNT(*) AS total FROM product WHERE distributor_id = ?',
+      'SELECT COUNT(*) AS total FROM PRODUCT WHERE Distributor_ID = ?',
       [distributorId]
     );
 
     const [[stockSum]] = await pool.query(
-      'SELECT SUM(remaining_quantity) AS total FROM stock WHERE distributor_id = ?',
+      'SELECT SUM(Remaining_Quantity) AS total FROM STOCK WHERE Distributor_ID = ?',
       [distributorId]
     );
 
     const [[orderCount]] = await pool.query(
-      'SELECT COUNT(*) AS total FROM orders WHERE distributor_id = ?',
+      'SELECT COUNT(*) AS total FROM ORDERS WHERE Distributor_ID = ?',
       [distributorId]
     );
 
     const [[pendingOrders]] = await pool.query(
-      "SELECT COUNT(*) AS total FROM orders WHERE distributor_id = ? AND order_status = 'Pending'",
+      "SELECT COUNT(*) AS total FROM ORDERS WHERE Distributor_ID = ? AND Order_Status = 'Pending'",
       [distributorId]
     );
 
     const [[revenue]] = await pool.query(
-      'SELECT SUM(total_bill) AS total FROM orders WHERE distributor_id = ?',
+      'SELECT SUM(Total_Bill) AS total FROM ORDERS WHERE Distributor_ID = ?',
       [distributorId]
     );
 
     const [recentOrders] = await pool.query(
-      `SELECT order_id, retailer_id, order_date, total_bill, order_status
-       FROM orders WHERE distributor_id = ?
-       ORDER BY order_date DESC LIMIT 5`,
+      `SELECT Order_ID, Retailer_ID, Order_Date, Total_Bill, Order_Status
+       FROM ORDERS WHERE Distributor_ID = ?
+       ORDER BY Order_Date DESC LIMIT 5`,
       [distributorId]
     );
 
@@ -63,12 +63,12 @@ exports.getAllDistributors = async (req, res) => {
   try {
     const [distributors] = await pool.query(
       `SELECT 
-         distributor_id AS Distributor_ID, 
-         name AS Name, 
-         contact AS Contact, 
-         address AS Address, 
-         type_of_shop AS Type_of_Shop 
-       FROM distributor`
+         Distributor_ID, 
+         Name, 
+         Contact, 
+         Address, 
+         Type_of_Shop 
+       FROM DISTRIBUTOR`
     );
     res.status(200).json(distributors);
   } catch (err) {
@@ -170,41 +170,40 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-
 exports.changeEmail = async (req, res) => {
   try {
-    const retailerId = req.user.id;
+    const distributorId = req.user.id;
     const { currentPassword, newEmail } = req.body;
 
     if (!currentPassword || !newEmail) {
       return res.status(400).json({ message: 'Current password and new email are required' });
     }
 
-    const [[retailer]] = await pool.query(
-      'SELECT Password FROM RETAILER WHERE Retailer_ID = ?',
-      [retailerId]
+    const [[distributor]] = await pool.query(
+      'SELECT Password FROM DISTRIBUTOR WHERE Distributor_ID = ?',
+      [distributorId]
     );
 
-    if (!retailer) {
-      return res.status(404).json({ message: 'Retailer not found' });
+    if (!distributor) {
+      return res.status(404).json({ message: 'Distributor not found' });
     }
 
-    const isMatch = await bcrypt.compare(currentPassword, retailer.Password);
+    const isMatch = await bcrypt.compare(currentPassword, distributor.Password);
     if (!isMatch) {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
     const [[existing]] = await pool.query(
-      'SELECT Retailer_ID FROM RETAILER WHERE Email = ? AND Retailer_ID != ?',
-      [newEmail, retailerId]
+      'SELECT Distributor_ID FROM DISTRIBUTOR WHERE Email = ? AND Distributor_ID != ?',
+      [newEmail, distributorId]
     );
     if (existing) {
       return res.status(400).json({ message: 'That email is already in use' });
     }
 
     await pool.query(
-      'UPDATE RETAILER SET Email = ? WHERE Retailer_ID = ?',
-      [newEmail, retailerId]
+      'UPDATE DISTRIBUTOR SET Email = ? WHERE Distributor_ID = ?',
+      [newEmail, distributorId]
     );
 
     res.status(200).json({ message: 'Email changed successfully' });

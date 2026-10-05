@@ -3,11 +3,11 @@ const pool = require('../config/db');
 const OrderItemModel = {
   async findByOrder(orderId) {
     const [rows] = await pool.query(
-      `SELECT oi.order_item_id, oi.product_id, p.name AS product_name,
-              oi.quantity, oi.cost_price, oi.selling_price, oi.subtotal
-       FROM order_item oi
-       JOIN product p ON oi.product_id = p.product_id
-       WHERE oi.order_id = ?`,
+      `SELECT oi.Order_Item_ID, oi.Product_ID, p.Name AS product_name,
+              oi.Quantity, oi.Cost_Price, oi.Selling_Price, oi.Subtotal
+       FROM ORDER_ITEM oi
+       JOIN PRODUCT p ON oi.Product_ID = p.Product_ID
+       WHERE oi.Order_ID = ?`,
       [orderId]
     );
     return rows;
