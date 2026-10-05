@@ -17,7 +17,7 @@ const ExpenseModel = {
          Distributor_ID AS distributor_id,
          Category       AS category,
          Amount         AS amount,
-         Date           AS date,
+         DATE_FORMAT(Date, '%Y-%m-%d') AS date,
          Description    AS description
        FROM EXPENSES 
        WHERE Distributor_ID = ? 

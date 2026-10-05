@@ -48,23 +48,43 @@ exports.deleteProduct = async (req, res) => {
 
 exports.getProductsByDistributor = async (req, res) => {
   try {
-    const { distributorId } = req.params;
-    const [products] = await pool.query(
-      `SELECT 
-         p.product_id AS Product_ID,
-         p.name AS Name,
-         p.category AS Category,
-         p.selling_price AS Selling_Price,
-         p.unit AS Unit,
-         COALESCE(SUM(s.remaining_quantity), 0) AS Remaining_Quantity
-       FROM product p
-       LEFT JOIN stock s ON p.product_id = s.product_id
-       WHERE p.distributor_id = ?
-       GROUP BY p.product_id, p.name, p.category, p.selling_price, p.unit`,
+    const distributorId = req.params.distributorId;
+
+    const [rows] = await pool.query(
+      `SELECT p.Product_ID,
+              p.Product_ID AS id,
+              p.Product_ID AS product_id,
+              p.Distributor_ID,
+              p.Distributor_ID AS distributor_id,
+              p.Name,
+              p.Name AS name,
+              p.Cost_Price,
+              p.Cost_Price AS cost_price,
+              p.Selling_Price,
+              p.Selling_Price AS selling_price,
+              p.Category,
+              p.Category AS category,
+              p.Unit,
+              p.Unit AS unit,
+              CAST(COALESCE(s.total_remaining, 0) AS SIGNED) AS Remaining_Quantity,
+              CAST(COALESCE(s.total_remaining, 0) AS SIGNED) AS remaining_quantity,
+              CAST(COALESCE(s.total_remaining, 0) AS SIGNED) AS available,
+              CAST(COALESCE(s.total_remaining, 0) AS SIGNED) AS available_quantity,
+              CAST(COALESCE(s.total_remaining, 0) AS SIGNED) AS stock
+       FROM PRODUCT p
+       LEFT JOIN (
+         SELECT Product_ID, SUM(Remaining_Quantity) AS total_remaining
+         FROM STOCK
+         GROUP BY Product_ID
+       ) s ON s.Product_ID = p.Product_ID
+       WHERE p.Distributor_ID = ?
+       ORDER BY p.Name`,
       [distributorId]
     );
-    res.status(200).json(products);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Get products by distributor error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };

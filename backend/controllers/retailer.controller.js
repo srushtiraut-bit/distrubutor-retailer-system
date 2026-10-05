@@ -115,7 +115,9 @@ exports.placeOrder = async (req, res) => {
 
     const productIds = items.map((i) => i.productId);
     const [products] = await connection.query(
-      `SELECT Product_ID, Cost_Price, Selling_Price FROM PRODUCT WHERE Product_ID IN (?)`,
+      `SELECT Product_ID, Cost_Price, Selling_Price
+       FROM PRODUCT
+       WHERE Product_ID IN (?)`,
       [productIds]
     );
 
@@ -135,7 +137,7 @@ exports.placeOrder = async (req, res) => {
 
     const [orderResult] = await connection.query(
       `INSERT INTO ORDERS (Retailer_ID, Distributor_ID, Order_Date, Total_Bill, Order_Status)
-       VALUES (?, ?, NOW(), ?, 'Pending')`,
+       VALUES (?, ?, CURDATE(), ?, 'Pending')`,
       [retailerId, distributorId, totalBill]
     );
 

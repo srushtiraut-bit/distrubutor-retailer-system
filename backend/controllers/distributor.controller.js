@@ -54,26 +54,22 @@ exports.getDashboardStats = async (req, res) => {
       recentOrders
     });
   } catch (err) {
-    console.error('Get distributors error:', err);
+    console.error('Get dashboard stats error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
 exports.getAllDistributors = async (req, res) => {
   try {
-    const [distributors] = await pool.query(
-      `SELECT 
-         Distributor_ID, 
-         Name, 
-         Contact, 
-         Address, 
-         Type_of_Shop 
-       FROM DISTRIBUTOR`
+    const [rows] = await pool.query(
+      `SELECT Distributor_ID, Name, Contact, Address, Type_of_Shop
+       FROM DISTRIBUTOR
+       ORDER BY Name`
     );
-    res.status(200).json(distributors);
-  } catch (err) {
-    console.error('Get all distributors error:', err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.json(rows);
+  } catch (error) {
+    console.error('Get all distributors error:', error);
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
