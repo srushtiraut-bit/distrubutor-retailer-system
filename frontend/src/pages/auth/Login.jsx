@@ -4,6 +4,37 @@ import { loginUser } from '../../api/authApi';
 import { AuthContext } from '../../context/AuthContext';
 import './Login.css';
 
+/* Eye icon: closed eye = hidden, open eye = visible */
+const EyeIcon = ({ visible }) =>
+  visible ? (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ) : (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 9c3 4.5 7 6.5 10 6.5s7-2 10-6.5" />
+      <line x1="12" y1="15.5" x2="12" y2="19" />
+      <line x1="6.5" y1="14" x2="4.5" y2="17" />
+      <line x1="17.5" y1="14" x2="19.5" y2="17" />
+    </svg>
+  );
+
+const eyeButtonStyle = {
+  position: 'absolute',
+  right: '12px',
+  top: '50%',
+  transform: 'translateY(-50%)',
+  background: 'none',
+  border: 'none',
+  padding: '4px',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  color: '#6b7280',
+};
+
 const Login = () => {
   const [role, setRole] = useState('retailer');
 
@@ -152,27 +183,17 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  style={{ paddingRight: '65px', width: '100%', boxSizing: 'border-box' }}
+                  style={{ paddingRight: '48px' }}
                 />
 
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  style={{
-                    position: 'absolute',
-                    right: '12px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: '#93c5fd',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    padding: 0,
-                  }}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  style={eyeButtonStyle}
                 >
-                  {showPassword ? 'Hide' : 'Show'}
+                  <EyeIcon visible={showPassword} />
                 </button>
               </div>
 

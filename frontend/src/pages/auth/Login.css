@@ -6,14 +6,6 @@
   max-width: 1126px;
   margin: 0 auto;
   border-inline: 1px solid #e5e4e7;
-}
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
-}
-.login-page {
   min-height: 100vh;
   display: flex;
   font-family: Arial, sans-serif;
@@ -199,6 +191,33 @@
   color: #2563eb;
   text-decoration: none;
   font-size: 13px;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.input-group .password-wrapper input {
+  padding-right: 48px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+}
+
+.toggle-password:hover {
+  color: #2563eb;
 }
 
 /* =========================
