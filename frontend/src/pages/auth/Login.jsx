@@ -170,9 +170,7 @@ const Login = () => {
               <div className="password-label">
                 <label>Password</label>
 
-                <a href="#forgot">
-                  Forgot password?
-                </a>
+               <Link to="/forgot-password">Forgot password?</Link>
               </div>
 
               <div style={{ position: 'relative' }}>

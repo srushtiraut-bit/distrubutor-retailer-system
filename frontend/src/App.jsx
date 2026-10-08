@@ -20,7 +20,7 @@ import PaymentHistory from './pages/retailer/PaymentHistory';
 import Settings from './pages/retailer/Settings';
 import PlaceOrder from './pages/retailer/PlaceOrder';
 import Payment from './pages/retailer/Payment';
-
+import ForgotPassword from './pages/auth/ForgotPassword';
 function App() {
   return (
     <AuthProvider>
@@ -173,6 +173,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
