@@ -12,16 +12,15 @@ const ExpenseModel = {
 
   async findByDistributor(distributor_id) {
     const [rows] = await pool.query(
-      `SELECT 
-         Expense_ID     AS expense_id,
-         Distributor_ID AS distributor_id,
-         Category       AS category,
-         Amount         AS amount,
-         DATE_FORMAT(Date, '%Y-%m-%d') AS date,
-         Description    AS description
-       FROM EXPENSES 
-       WHERE Distributor_ID = ? 
-       ORDER BY Date DESC`,
+      `SELECT Expense_ID AS expense_id,
+              Distributor_ID AS distributor_id,
+              Category AS category,
+              Amount AS amount,
+              DATE_FORMAT(Date, '%Y-%m-%d') AS date,
+              Description AS description
+       FROM EXPENSES
+       WHERE Distributor_ID = ?
+       ORDER BY Date DESC, Expense_ID DESC`,
       [distributor_id]
     );
     return rows;
@@ -53,7 +52,7 @@ const ExpenseModel = {
       [expense_id, distributor_id]
     );
     return result.affectedRows;
-  }
+  },
 };
 
 module.exports = ExpenseModel;

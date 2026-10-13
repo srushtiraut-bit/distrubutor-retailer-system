@@ -16,25 +16,27 @@ exports.getMyProfitLoss = async (req, res) => {
       ? await ProfitLossModel.getSummaryByDistributorAndDateRange(distributorId, startDate, endDate)
       : await ProfitLossModel.getSummaryByDistributor(distributorId);
 
-    const totalExpenses = useDateRange
-      ? await ExpenseModel.getTotalByDateRange(distributorId, startDate, endDate)
-      : await ExpenseModel.getTotalByDistributor(distributorId);
+    const totalExpenses = Number(
+      useDateRange
+        ? await ExpenseModel.getTotalByDateRange(distributorId, startDate, endDate)
+        : await ExpenseModel.getTotalByDistributor(distributorId)
+    ) || 0;
 
-    const totalProfit = summary.totalProfit || 0;
-    const netProfit = totalProfit - totalExpenses;
+    const totalProfit = Number(summary.totalProfit) || 0;
 
     res.status(200).json({
       records,
       summary: {
-        totalCost: summary.totalCost || 0,
-        totalRevenue: summary.totalRevenue || 0,
-        totalProfit: totalProfit,
-        avgMargin: summary.avgMargin || 0,
-        totalExpenses: totalExpenses,
-        netProfit: netProfit,
+        totalCost: Number(summary.totalCost) || 0,
+        totalRevenue: Number(summary.totalRevenue) || 0,
+        totalProfit,
+        avgMargin: Number(summary.avgMargin) || 0,
+        totalExpenses,
+        netProfit: totalProfit - totalExpenses,
       },
     });
   } catch (err) {
+    console.error('Profit loss error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
